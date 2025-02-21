@@ -21,7 +21,7 @@ function processCondition(testNode, variableMap) {
 // 分析函数调用
 export function analyzeFunctionCalls(code, functionName, methods) {
     const ast = parse(code, { ecmaVersion: 2020 });
-    const alertConditions = {};
+    const alertConditions = [];
 
     function extractConditions(node, conditions, variableMap) {
         if (node.type === "VariableDeclaration") {
@@ -50,7 +50,10 @@ export function analyzeFunctionCalls(code, functionName, methods) {
             }
         } else if (node.type === "ExpressionStatement" && node.expression.type === "CallExpression" && methods.includes(node.expression.callee.name)) {
             const alertNum = node.expression.arguments[0].value;
-            alertConditions[alertNum] = conditions.join(" 且 ");
+            alertConditions.push({
+                call: `alert(${alertNum})`,
+                condition: conditions.join(' 并且 ')
+            });
         }
     }
 
